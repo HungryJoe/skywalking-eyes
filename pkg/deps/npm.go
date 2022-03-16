@@ -1,11 +1,10 @@
-//
-// Licensed to Apache Software Foundation (ASF) under one or more contributor
-// license agreements. See the NOTICE file distributed with
-// this work for additional information regarding copyright
-// ownership. Apache Software Foundation (ASF) licenses this file to you under
-// the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License.
-// You may obtain a copy of the License at
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
@@ -15,6 +14,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+
 package deps
 
 import (
@@ -23,7 +23,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -51,6 +50,7 @@ type Package struct {
 	License  json.RawMessage `json:"license"`
 	Licenses []Lcs           `json:"licenses"`
 	Path     string          `json:"-"`
+	Version  string          `json:"version"`
 }
 
 const PkgFileName = "package.json"
@@ -210,6 +210,7 @@ func (resolver *NpmResolver) ResolvePkgFile(result *Result, pkgPath string) erro
 		return err
 	}
 
+	result.Version = packageInfo.Version
 	if lcs, ok := resolver.ResolveLicenseField(packageInfo.License); ok {
 		result.LicenseSpdxID = lcs
 		return nil
@@ -259,7 +260,7 @@ func (resolver *NpmResolver) ResolveLicensesField(licenses []Lcs) (string, bool)
 
 // ResolveLcsFile tries to find the license file to identify the license
 func (resolver *NpmResolver) ResolveLcsFile(result *Result, pkgPath string) error {
-	depFiles, err := ioutil.ReadDir(pkgPath)
+	depFiles, err := os.ReadDir(pkgPath)
 	if err != nil {
 		return err
 	}
@@ -269,7 +270,7 @@ func (resolver *NpmResolver) ResolveLcsFile(result *Result, pkgPath string) erro
 		}
 		licenseFilePath := filepath.Join(pkgPath, info.Name())
 		result.LicenseFilePath = licenseFilePath
-		content, err := ioutil.ReadFile(licenseFilePath)
+		content, err := os.ReadFile(licenseFilePath)
 		if err != nil {
 			return err
 		}
@@ -289,7 +290,7 @@ func (resolver *NpmResolver) ResolveLcsFile(result *Result, pkgPath string) erro
 
 // ParsePkgFile parses the content of the package file
 func (resolver *NpmResolver) ParsePkgFile(pkgFile string) (*Package, error) {
-	content, err := ioutil.ReadFile(pkgFile)
+	content, err := os.ReadFile(pkgFile)
 	if err != nil {
 		return nil, err
 	}

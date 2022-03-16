@@ -1,11 +1,10 @@
-//
-// Licensed to Apache Software Foundation (ASF) under one or more contributor
-// license agreements. See the NOTICE file distributed with
-// this work for additional information regarding copyright
-// ownership. Apache Software Foundation (ASF) licenses this file to you under
-// the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License.
-// You may obtain a copy of the License at
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
@@ -15,12 +14,12 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+
 package deps_test
 
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -65,26 +64,6 @@ func dumpPomFile(fileName, content string) error {
 	return nil
 }
 
-func tmpDir() (string, error) {
-	dir, err := ioutil.TempDir("", "")
-	if err != nil {
-		return "", err
-	}
-	return dir, nil
-}
-
-func destroyTmpDir(t *testing.T, dir string) {
-	if dir == "" {
-		t.Errorf("the temporary directory does not exist")
-		return
-	}
-
-	err := os.RemoveAll(dir)
-	if err != nil {
-		t.Error(err)
-	}
-}
-
 func TestResolveMaven(t *testing.T) {
 	if _, err := exec.Command("mvn", "--version").Output(); err != nil {
 		logger.Log.Warnf("Failed to find mvn, the test `TestResolveMaven` was skipped")
@@ -93,14 +72,7 @@ func TestResolveMaven(t *testing.T) {
 
 	resolver := new(deps.MavenPomResolver)
 
-	path, err := tmpDir()
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	defer destroyTmpDir(t, path)
-
-	pomFile := filepath.Join(path, "pom.xml")
+	pomFile := filepath.Join(t.TempDir(), "pom.xml")
 
 	for _, test := range []struct {
 		pomContent string

@@ -1,11 +1,10 @@
-//
-// Licensed to Apache Software Foundation (ASF) under one or more contributor
-// license agreements. See the NOTICE file distributed with
-// this work for additional information regarding copyright
-// ownership. Apache Software Foundation (ASF) licenses this file to you under
-// the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License.
-// You may obtain a copy of the License at
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
@@ -15,7 +14,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-//
+
 package license
 
 import (
@@ -164,8 +163,8 @@ var (
 			"Neither the name of the copyright holder nor the names of its contributors may be used to endorse",
 		},
 		{
-			regexp.MustCompile(`(?i)(neither the name of) (.+?) (nor the names of)`),
-			"$1 the copyright holder $3",
+			regexp.MustCompile(`(?i)(neither the name)( of)? (.+?) (nor the names)( of( its authors and)?)?( its)?`),
+			"$1 the copyright holder $4",
 		},
 		{
 			regexp.MustCompile(`(?i)you may not use this (file|library) except`),
@@ -195,7 +194,17 @@ var (
 		// BSD-3-Clause
 		// MIT
 		{ // remove optional header
-			regexp.MustCompile(`(?im)^\s*\(?(The )?MIT License( \((MIT|Expat)\))?\)?$`),
+			regexp.MustCompile(`(?im)^\s*\(?(The )?MIT License( \((MIT|Expat)\))?\)?\s*$`),
+			"",
+		},
+		// The Three Clause BSD License (http://(http://en.wikipedia.org/wiki/bsd_licenses)
+		{ // remove optional header
+			regexp.MustCompile(`(?im)^\s*?the (two|three)? clause bsd license (\(http(s)?://(\w|\.|/)+\))?$`),
+			"",
+		},
+		// BSD 3-Clause License
+		{ // remove optional header
+			regexp.MustCompile(`(?im)^\s*?bsd ([23])-clause license\s*$`),
 			"",
 		},
 		// ISC
@@ -225,13 +234,29 @@ var (
 			" ",
 		},
 		// Copyright (c) .....
+		// © Copyright .....
 		{
-			regexp.MustCompile(`(?m)^\s*Copyright (\([cC©]\))?.+$`),
+			regexp.MustCompile(`(?m)^\s*([cC©])?\s*Copyright (\([cC©]\))?.+$`),
+			"",
+		},
+		// Portions Copyright (C) ...
+		{
+			regexp.MustCompile(`(?m)^\s*Portions Copyright (\([cC©]\))?.+$`),
 			"",
 		},
 		// All rights reserved
 		{
 			regexp.MustCompile(`(?m)^\s*All rights reserved\.?$`),
+			"",
+		},
+		// ... is distributed under the Simplified BSD License:
+		{
+			regexp.MustCompile(`(?im)^\s*.+ is distributed under the Simplified BSD License\:?$`),
+			"",
+		},
+		// Please consider promoting this project if you find it useful.
+		{
+			regexp.MustCompile(`(?im)^\s*Please consider promoting this project if you find it useful\.?$`),
 			"",
 		},
 

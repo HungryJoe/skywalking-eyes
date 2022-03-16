@@ -1,11 +1,10 @@
-//
-// Licensed to Apache Software Foundation (ASF) under one or more contributor
-// license agreements. See the NOTICE file distributed with
-// this work for additional information regarding copyright
-// ownership. Apache Software Foundation (ASF) licenses this file to you under
-// the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License.
-// You may obtain a copy of the License at
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
@@ -15,6 +14,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+
 package deps
 
 import (
@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"go/build"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -59,7 +58,7 @@ func (resolver *GoModResolver) Resolve(goModFile string, report *Report) error {
 		return err
 	}
 
-	output, err := exec.Command("go", "list", "-m", "-json", "all").Output()
+	output, err := exec.Command("go", "mod", "download", "-json").Output()
 	if err != nil {
 		return err
 	}
@@ -91,6 +90,7 @@ func (resolver *GoModResolver) ResolvePackages(modules []*packages.Module, repor
 			report.Skip(&Result{
 				Dependency:    module.Path,
 				LicenseSpdxID: Unknown,
+				Version:       module.Version,
 			})
 		}
 	}
@@ -104,7 +104,7 @@ func (resolver *GoModResolver) ResolvePackageLicense(module *packages.Module, re
 
 	for {
 		logger.Log.Debugf("Directory of %+v is %+v", module.Path, dir)
-		files, err := ioutil.ReadDir(dir)
+		files, err := os.ReadDir(dir)
 		if err != nil {
 			return err
 		}
@@ -113,7 +113,7 @@ func (resolver *GoModResolver) ResolvePackageLicense(module *packages.Module, re
 				continue
 			}
 			licenseFilePath := filepath.Join(dir, info.Name())
-			content, err := ioutil.ReadFile(licenseFilePath)
+			content, err := os.ReadFile(licenseFilePath)
 			if err != nil {
 				return err
 			}
@@ -126,6 +126,7 @@ func (resolver *GoModResolver) ResolvePackageLicense(module *packages.Module, re
 				LicenseFilePath: licenseFilePath,
 				LicenseContent:  string(content),
 				LicenseSpdxID:   identifier,
+				Version:         module.Version,
 			})
 			return nil
 		}
